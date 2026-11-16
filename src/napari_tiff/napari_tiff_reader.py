@@ -122,10 +122,10 @@ def _multifile_ome_series(path: str) -> Optional[Dict[Path, int]]:
                 return None
             series_files = {}
             for index, series in enumerate(tif.series):
-                files = {Path(page.parent.filehandle.path).resolve() for page in series.pages if page is not None}
+                files = {page.parent.filehandle.path for page in series.pages if page is not None}
                 if len(files) != 1:
                     return None
-                series_files[files.pop()] = index
+                series_files[Path(files.pop()).resolve()] = index
     except Exception as exc:
         log_warning(f"Cannot read the OME series of {path}: {exc}")
         return None
