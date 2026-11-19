@@ -288,9 +288,10 @@ def _is_in_file(tif: TiffFile, series) -> bool:
 def _read_series(tif: TiffFile, series) -> np.ndarray:
     """Return the data of a series as a numpy array."""
     if any(page is not None and page.parent is not tif for page in series.pages):
-        # The series lives in another file of a multi-file OME-TIFF. In that
-        # case series.asarray() reads contiguous data from the opened file
-        # instead (tifffile <= 2026.11.8), so read it page by page via zarr.
+        # The series lives in another file of a multi-file OME-TIFF. If the
+        # data is contiguous, series.asarray() reads it from the opened file
+        # instead of the file of the series (tifffile bug, still present in
+        # 2026.11.16), so read it page by page via zarr.
         import zarr
 
         return np.asarray(zarr.open(series.aszarr(), mode="r"))
